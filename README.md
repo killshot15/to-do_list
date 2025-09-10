@@ -136,6 +136,14 @@ CREATE TABLE tasks (
 3. Update documentation as needed
 4. Ensure security best practices
 
+## Contributors
+
+- Jobin Jose - 2nd Year B.Tech CS Engineering student(3rd semester, A2CSE) at St. Thomas Institute of Science & Technology, Trivandrum, Kerala, India
+- Niranjan Binu - 2nd Year B.Tech CS Engineering student(3rd semester, A2CSE) at St. Thomas Institute of Science & Technology, Trivandrum, Kerala, India
+- Praful Suji - 2nd Year B.Tech CS Engineering student(3rd semester, A2CSE) at St. Thomas Institute of Science & Technology, Trivandrum, Kerala, India
+- Sakkeer Hussain - 2nd Year B.Tech CS Engineering student(3rd semester, A2CSE) at St. Thomas Institute of Science & Technology, Trivandrum, Kerala, India
+- Shibin Eugin - 2nd Year B.Tech CS Engineering student(3rd semester, A2CSE) at St. Thomas Institute of Science & Technology, Trivandrum, Kerala, India
+
 ## Licenses
 
 ### Project License
