@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Timer Dashboard v8 - Gold & Orange Theme</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #E6D2AA 0%, #D4AF37 100%);
+            min-height: 100vh;
+            padding: 20px;
+            transition: background 0.3s ease;
+            color: #5A4A42;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 30px;
+            height: calc(100vh - 40px);
+        }
+
+        .panel {
+            background: rgba(255, 248, 237, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            border: 2px solid #D4AF37;
+        }
+
+        .panel h2 {
+            color: #BF5700;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.5rem;
+            transition: color 0.3s ease;
+        }
+
+        /* Calendar Styles */
+        .calendar {
+            text-align: center;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .nav-btn {
+            background: #BF5700;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: #D4AF37;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .day-header {
+            font-weight: bold;
+            padding: 10px 5px;
+            color: #BF5700;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .day {
+            padding: 12px 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .day:hover {
+            background: rgba(191, 87, 0, 0.2);
+        }
+
+        .day.today {
+            background: #BF5700;
+            color: white;
+        }
+
+        .day.other-month {
+            color: #CC8899;
+            background: rgba(204, 136, 153, 0.1);
+        }
+
+        /* Clock Styles */
+        .clock-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .clock {
+            width: 200px;
+            height: 200px;
+            border: 8px solid #BF5700;
+            border-radius: 50%;
+            position: relative;
+            background: #FFF8ED;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.3s ease;
+        }
+
+        .clock-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 12px;
+            height: 12px;
+            background: #BF5700;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            transition: background 0.3s ease;
+        }
+
+        .hand {
+            position: absolute;
+            background: #BF5700;
+            transform-origin: bottom center;
+            border-radius: 2px;
+            transition: background 0.3s ease;
+        }
+
+        .hour-hand {
+            width: 4px;
+            height: 60px;
+            top: 40px;
+            left: 50%;
+            margin-left: -2px;
+        }
+
+        .minute-hand {
+            width: 3px;
+            height: 80px;
+            top: 20px;
+            left: 50%;
+            margin-left: -1.5px;
+        }
+
+        .second-hand {
+            width: 1px;
+            height: 90px;
+            top: 10px;
+            left: 50%;
+            margin-left: -0.5px;
+            background: #CC8899;
+        }
+
+        .clock-numbers {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .number {
+            position: absolute;
+            font-weight: bold;
+            font-size: 18px;
+            color: #BF5700;
+            transition: color 0.3s ease;
+        }
+
+        .timer-clock {
+            border-color: #CC8899;
+        }
+
+        .timer-clock .hand {
+            background: #CC8899;
+        }
+
+        .timer-clock .clock-center {
+            background: #CC8899;
+        }
+
+        .shake {
+            animation: shake 0.5s infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .digital-time {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #BF5700;
+            margin-top: 10px;
+            transition: color 0.3s ease;
+        }
+
+        /* Task Panel Styles */
+        .task-form {
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #BF5700;
+            transition: color 0.3s ease;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #D4AF37;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #FFF8ED;
+            transition: border-color 0.2s, background 0.3s ease, color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #BF5700;
+        }
+
+        .timer-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .timer-inputs .input-with-label {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .timer-inputs .input-label {
+            font-size: 12px;
+            color: #BF5700;
+            margin-bottom: 4px;
+            text-align: center;
+        }
+
+        .add-btn {
+            background: #BF5700;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background 0.2s;
+        }
+
+        .add-btn:hover {
+            background: #D4AF37;
+        }
+
+        .task-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .task-item {
+            background: rgba(212, 175, 55, 0.15);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #D4AF37;
+            transition: all 0.3s ease;
+        }
+
+        .task-item.active {
+            border-left-color: #CC8899;
+            background: rgba(204, 136, 153, 0.2);
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .task-title {
+            font-weight: 600;
+            color: #5A4A42;
+            transition: color 0.3s ease;
+        }
+
+        .task-timer {
+            font-size: 0.9rem;
+            color: #BF5700;
+            transition: color 0.3s ease;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .start-btn {
+            background: #BF5700;
+            color: white;
+        }
+
+        .start-btn:hover {
+            background: #D4AF37;
+        }
+
+        .stop-btn {
+            background: #CC8899;
+            color: white;
+        }
+
+        .stop-btn:hover {
+            background: #BF5700;
+        }
+
+        .delete-btn {
+            background: #5A4A42;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #8A7367;
+        }
+
+        /* Custom Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: #FFF8ED;
+            border-radius: 12px;
+            padding: 25px;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            border: 2px solid #D4AF37;
+        }
+
+        .modal-header {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: #BF5700;
+            margin-bottom: 5px;
+            transition: color 0.3s ease;
+        }
+
+        .modal-message {
+            color: #5A4A42;
+            margin-bottom: 20px;
+            text-align: center;
+            transition: color 0.3s ease;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            min-width: 100px;
+            transition: all 0.2s;
+        }
+
+        .modal-btn.confirm {
+            background: #BF5700;
+            color: white;
+        }
+
+        .modal-btn.confirm:hover {
+            background: #D4AF37;
+        }
+
+        .modal-btn.cancel {
+            background: #CC8899;
+            color: white;
+        }
+
+        .modal-btn.cancel:hover {
+            background: #BF5700;
+        }
+
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #BF5700;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 20px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            font-size: 16px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background: linear-gradient(135deg, #5A4A42 0%, #3A2C25 100%);
+            color: #E6D2AA;
+        }
+
+        body.dark-mode .panel {
+            background: rgba(58, 44, 37, 0.95);
+            color: #E6D2AA;
+            border-color: #BF5700;
+        }
+
+        body.dark-mode .panel h2 {
+            color: #D4AF37;
+        }
+
+        body.dark-mode .calendar-header h3 {
+            color: #D4AF37;
+        }
+
+        body.dark-mode .day-header {
+            color: #D4AF37;
+        }
+
+        body.dark-mode .day {
+            color: #E6D2AA;
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        body.dark-mode .day:hover {
+            background: rgba(191, 87, 0, 0.4);
+        }
+
+        body.dark-mode .day.other-month {
+            color: #CC8899;
+            background: rgba(204, 136, 153, 0.2);
+        }
+
+        body.dark-mode .form-group label {
+            color: #D4AF37;
+        }
+
+        body.dark-mode .form-group input, 
+        body.dark-mode .form-group select {
+            background: #3A2C25;
+            border-color: #BF5700;
+            color: #E6D2AA;
+        }
+
+        body.dark-mode .task-item {
+            background: rgba(191, 87, 0, 0.2);
+            color: #E6D2AA;
+        }
+
+        body.dark-mode .task-title {
+            color: #E6D2AA;
+        }
+
+        body.dark-mode .task-timer {
+            color: #D4AF37;
+        }
+
+        body.dark-mode .task-item.active {
+            background: rgba(204, 136, 153, 0.3);
+        }
+
+        body.dark-mode .digital-time {
+            color: #D4AF37;
+        }
+
+        body.dark-mode .clock {
+            background: #3A2C25;
+            border-color: #D4AF37;
+        }
+
+        body.dark-mode .hand {
+            background: #D4AF37;
+        }
+
+        body.dark-mode .clock-center {
+            background: #D4AF37;
+        }
+
+        body.dark-mode .number {
+            color: #D4AF37;
+        }
+
+        body.dark-mode .modal {
+            background: #3A2C25;
+            color: #E6D2AA;
+            border-color: #BF5700;
+        }
+
+        body.dark-mode .modal-title {
+            color: #D4AF37;
+        }
+
+        body.dark-mode .modal-message {
+            color: #E6D2AA;
+        }
+
+        body.dark-mode .theme-toggle {
+            background: #D4AF37;
+            color: #3A2C25;
+        }
+
+        body.dark-mode .timer-inputs .input-label {
+            color: #D4AF37;
+        }
+
+        body.dark-mode .nav-btn {
+            background: #D4AF37;
+            color: #3A2C25;
+        }
+
+        body.dark-mode .nav-btn:hover {
+            background: #BF5700;
+            color: #E6D2AA;
+        }
+
+        body.dark-mode .add-btn {
+            background: #D4AF37;
+            color: #3A2C25;
+        }
+
+        body.dark-mode .add-btn:hover {
+            background: #BF5700;
+            color: #E6D2AA;
+        }
+
+        body.dark-mode .start-btn {
+            background: #D4AF37;
+            color: #3A2C25;
+        }
+
+        body.dark-mode .start-btn:hover {
+            background: #BF5700;
+            color: #E6D2AA;
+        }
+
+        body.dark-mode .stop-btn {
+            background: #CC8899;
+            color: #3A2C25;
+        }
+
+        body.dark-mode .stop-btn:hover {
+            background: #BF5700;
+            color: #E6D2AA;
+        }
+
+        body.dark-mode .delete-btn {
+            background: #8A7367;
+            color: #E6D2AA;
+        }
+
+        body.dark-mode .delete-btn:hover {
+            background: #5A4A42;
+        }
+
+        body.dark-mode .modal-btn.confirm {
+            background: #D4AF37;
+            color: #3A2C25;
+        }
+
+        body.dark-mode .modal-btn.confirm:hover {
+            background: #BF5700;
+            color: #E6D2AA;
+        }
+
+        body.dark-mode .modal-btn.cancel {
+            background: #CC8899;
+            color: #3A2C25;
+        }
+
+        body.dark-mode .modal-btn.cancel:hover {
+            background: #BF5700;
+            color: #E6D2AA;
+        }
+    </style>
+</head>
+<body>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle">Dark Mode 🌙</button>
+
+    <div class="container">
+        <!-- Calendar Panel -->
+        <div class="panel">
+            <h2>📅 Calendar</h2>
+            <div class="calendar">
+                <div class="calendar-header">
+                    <button class="nav-btn" onclick="previousMonth()">‹</button>
+                    <h3 id="monthYear"></h3>
+                    <button class="nav-btn" onclick="nextMonth()">›</button>
+                </div>
+                <div class="calendar-grid" id="calendar"></div>
+            </div>
+        </div>
+
+        <!-- Clocks Panel -->
+        <div class="panel">
+            <h2>🕐 Time Tracker</h2>
+            <div class="clock-container">
+                <div>
+                    <h3 style="text-align: center; margin-bottom: 10px; color: #BF5700;">Current Time</h3>
+                    <div class="clock" id="currentClock">
+                        <div class="clock-numbers"></div>
+                        <div class="hand hour-hand" id="currentHourHand"></div>
+                        <div class="hand minute-hand" id="currentMinuteHand"></div>
+                        <div class="hand second-hand" id="currentSecondHand"></div>
+                        <div class="clock-center"></div>
+                    </div>
+                    <div class="digital-time" id="currentTime"></div>
+                </div>
+
+                <div>
+                    <h3 style="text-align: center; margin-bottom: 10px; color: #BF5700;">Task Timer</h3>
+                    <div class="clock timer-clock" id="timerClock">
+                        <div class="clock-numbers"></div>
+                        <div class="hand hour-hand" id="timerHourHand"></div>
+                        <div class="hand minute-hand" id="timerMinuteHand"></div>
+                        <div class="hand second-hand" id="timerSecondHand"></div>
+                        <div class="clock-center"></div>
+                    </div>
+                    <div class="digital-time" id="timerTime">00:00:00</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tasks Panel -->
+        <div class="panel">
+            <h2>✅ Task Manager</h2>
+            <div class="task-form">
+                <div class="form-group">
+                    <label for="taskName">Task Name</label>
+                    <input type="text" id="taskName" placeholder="Enter task name">
+                </div>
+                <div class="form-group">
+                    <label>Timer Duration</label>
+                    <div class="timer-inputs">
+                        <div class="input-with-label">
+                            <span class="input-label">Hours</span>
+                            <input type="number" id="hours" placeholder="HH" min="0" max="23" value="0">
+                        </div>
+                        <div class="input-with-label">
+                            <span class="input-label">Minutes</span>
+                            <input type="number" id="minutes" placeholder="MM" min="0" max="59" value="0">
+                        </div>
+                        <div class="input-with-label">
+                            <span class="input-label">Seconds</span>
+                            <input type="number" id="seconds" placeholder="SS" min="0" max="59" value="0">
+                        </div>
+                    </div>
+                </div>
+                <button class="add-btn" onclick="addTask()">Add Task</button>
+            </div>
+            <div class="task-list" id="taskList"></div>
+        </div>
+    </div>
+
+    <!-- Next Task Modal -->
+    <div id="nextTaskModal" class="modal-overlay" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Task Completed!</h3>
+            </div>
+            <p class="modal-message" id="nextTaskMessage">Would you like to start the next task?</p>
+            <div class="modal-buttons">
+                <button class="modal-btn confirm" onclick="handleNextTaskResponse(true)">Yes</button>
+                <button class="modal-btn cancel" onclick="handleNextTaskResponse(false)">No</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentDate = new Date();
+        let tasks = [];
+        let activeTimer = null;
+        let timerInterval = null;
+        let nextTaskData = null;
+
+        // Calendar functionality
+        function renderCalendar() {
+            const calendar = document.getElementById('calendar');
+            const monthYear = document.getElementById('monthYear');
+            
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            monthYear.textContent = new Date(year, month).toLocaleDateString('en-US', { 
+                month: 'long', 
+                year: 'numeric' 
+            });
+            
+            // Update color based on theme
+            if (document.body.classList.contains('dark-mode')) {
+                monthYear.style.color = '#D4AF37';
+            } else {
+                monthYear.style.color = '#BF5700';
+            }
+
+            calendar.innerHTML = '';
+
+            // Day headers
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            days.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'day-header';
+                dayHeader.textContent = day;
+                calendar.appendChild(dayHeader);
+            });
+
+            // Get first day of month and number of days
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+
+            // Previous month's trailing days
+            const prevMonth = new Date(year, month, 0).getDate();
+            for (let i = firstDay - 1; i >= 0; i--) {
+                const day = document.createElement('div');
+                day.className = 'day other-month';
+                day.textContent = prevMonth - i;
+                calendar.appendChild(day);
+            }
+
+            // Current month days
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'day';
+                dayElement.textContent = day;
+                
+                if (year === today.getFullYear() && 
+                    month === today.getMonth() && 
+                    day === today.getDate()) {
+                    dayElement.classList.add('today');
+                }
+                
+                calendar.appendChild(dayElement);
+            }
+
+            // Next month's leading days
+            const totalCells = calendar.children.length - 7; // Subtract headers
+            const remainingCells = 42 - totalCells; // 6 rows × 7 days
+            for (let day = 1; day <= remainingCells; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'day other-month';
+                dayElement.textContent = day;
+                calendar.appendChild(dayElement);
+            }
+        }
+
+        function previousMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        }
+
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        }
+
+        // Clock functionality
+        function updateCurrentClock() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+            
+            // Convert to 12-hour format
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+
+            const hourAngle = (hours * 30) + (minutes * 0.5);
+            const minuteAngle = minutes * 6;
+            const secondAngle = seconds * 6;
+
+            document.getElementById('currentHourHand').style.transform = `rotate(${hourAngle}deg)`;
+            document.getElementById('currentMinuteHand').style.transform = `rotate(${minuteAngle}deg)`;
+            document.getElementById('currentSecondHand').style.transform = `rotate(${secondAngle}deg)`;
+
+            // Format time as HH:MM:SS AM/PM
+            const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} ${ampm}`;
+            document.getElementById('currentTime').textContent = timeString;
+        }
+
+        function updateTimerClock() {
+            if (!activeTimer) {
+                document.getElementById('timerTime').textContent = '00:00:00';
+                document.getElementById('timerHourHand').style.transform = 'rotate(0deg)';
+                document.getElementById('timerMinuteHand').style.transform = 'rotate(0deg)';
+                document.getElementById('timerSecondHand').style.transform = 'rotate(0deg)';
+                return;
+            }
+
+            const totalSeconds = activeTimer.remainingTime;
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            // Calculate angles for timer display
+            const hourAngle = (hours % 12) * 30 + (minutes * 0.5);
+            const minuteAngle = minutes * 6;
+            const secondAngle = seconds * 6;
+
+            document.getElementById('timerHourHand').style.transform = `rotate(${hourAngle}deg)`;
+            document.getElementById('timerMinuteHand').style.transform = `rotate(${minuteAngle}deg)`;
+            document.getElementById('timerSecondHand').style.transform = `rotate(${secondAngle}deg)`;
+
+            const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            document.getElementById('timerTime').textContent = timeString;
+        }
+
+        // Add clock numbers
+        function addClockNumbers() {
+            const clocks = document.querySelectorAll('.clock-numbers');
+            clocks.forEach(clockNumbers => {
+                for (let i = 1; i <= 12; i++) {
+                    const number = document.createElement('div');
+                    number.className = 'number';
+                    number.textContent = i;
+                    
+                    const angle = (i * 30 - 90) * (Math.PI / 180);
+                    const radius = 75;
+                    const x = Math.cos(angle) * radius + 92;
+                    const y = Math.sin(angle) * radius + 92;
+                    
+                    number.style.left = x + 'px';
+                    number.style.top = y + 'px';
+                    number.style.transform = 'translate(-50%, -50%)';
+                    
+                    clockNumbers.appendChild(number);
+                }
+            });
+        }
+
+        // Task management
+        function addTask() {
+            const taskName = document.getElementById('taskName').value.trim();
+            const hours = parseInt(document.getElementById('hours').value) || 0;
+            const minutes = parseInt(document.getElementById('minutes').value) || 0;
+            const seconds = parseInt(document.getElementById('seconds').value) || 0;
+
+            if (!taskName) {
+                alert('Please enter a task name');
+                return;
+            }
+
+            if (hours === 0 && minutes === 0 && seconds === 0) {
+                alert('Please set a timer duration');
+                return;
+            }
+
+            const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+            const task = {
+                id: Date.now(),
+                name: taskName,
+                duration: totalSeconds,
+                remainingTime: totalSeconds,
+                isActive: false
+            };
+
+            tasks.push(task);
+            renderTasks();
+
+            // Clear form
+            document.getElementById('taskName').value = '';
+            document.getElementById('hours').value = '0';
+            document.getElementById('minutes').value = '0';
+            document.getElementById('seconds').value = '0';
+        }
+
+        function renderTasks() {
+            const taskList = document.getElementById('taskList');
+            taskList.innerHTML = '';
+
+            tasks.forEach(task => {
+                const taskElement = document.createElement('div');
+                taskElement.className = `task-item ${task.isActive ? 'active' : ''}`;
+                
+                const hours = Math.floor(task.remainingTime / 3600);
+                const minutes = Math.floor((task.remainingTime % 3600) / 60);
+                const seconds = task.remainingTime % 60;
+                const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                taskElement.innerHTML = `
+                    <div class="task-header">
+                        <div class="task-title">${task.name}</div>
+                        <div class="task-timer">${timeString}</div>
+                    </div>
+                    <div class="task-actions">
+                        ${!task.isActive ? 
+                            `<button class="btn start-btn" onclick="startTask(${task.id})">Start</button>` :
+                            `<button class="btn stop-btn" onclick="stopTask(${task.id})">Stop</button>`
+                        }
+                        <button class="btn delete-btn" onclick="deleteTask(${task.id})">Delete</button>
+                    </div>
+                `;
+
+                taskList.appendChild(taskElement);
+            });
+        }
+
+        function startTask(taskId) {
+            // Stop any active timer
+            if (activeTimer) {
+                stopTask(activeTimer.id);
+            }
+
+            const task = tasks.find(t => t.id === taskId);
+            if (task && task.remainingTime > 0) {
+                task.isActive = true;
+                activeTimer = task;
+                
+                timerInterval = setInterval(() => {
+                    activeTimer.remainingTime--;
+                    updateTimerClock();
+                    renderTasks();
+
+                    if (activeTimer.remainingTime <= 0) {
+                        // Timer finished - shake the clock for 5 seconds
+                        const timerClock = document.getElementById('timerClock');
+                        timerClock.classList.add('shake');
+                        
+                        const completedTaskId = activeTimer.id;
+                        const completedTaskName = activeTimer.name;
+                        stopTask(activeTimer.id);
+                        
+                        // Show completion alert
+                        alert(`Task "${completedTaskName}" completed!`);
+                        
+                        // Remove shake after 5 seconds
+                        setTimeout(() => {
+                            timerClock.classList.remove('shake');
+                        }, 5000);
+                        
+                        // Check for next task and ask permission
+                        setTimeout(() => {
+                            startNextTask(completedTaskId);
+                        }, 100);
+                    }
+                }, 1000);
+
+                renderTasks();
+                updateTimerClock();
+            }
+        }
+
+        function startNextTask(completedTaskId) {
+            // Find the next task with remaining time
+            const nextTask = tasks.find(task => 
+                task.id !== completedTaskId && 
+                task.remainingTime > 0 && 
+                !task.isActive
+            );
+            
+            if (nextTask) {
+                // Store data for the next task
+                nextTaskData = {
+                    taskId: nextTask.id,
+                    taskName: nextTask.name
+                };
+                
+                // Show modal to ask permission to continue with next task
+                document.getElementById('nextTaskMessage').textContent = 
+                    `Would you like to start the next task: "${nextTask.name}"?`;
+                document.getElementById('nextTaskModal').style.display = 'flex';
+            }
+        }
+
+        function handleNextTaskResponse(shouldStart) {
+            // Hide the modal
+            document.getElementById('nextTaskModal').style.display = 'none';
+            
+            if (shouldStart && nextTaskData) {
+                // Start the next task
+                startTask(nextTaskData.taskId);
+            }
+            
+            // Reset next task data
+            nextTaskData = null;
+        }
+
+        function stopTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                task.isActive = false;
+            }
+
+            if (activeTimer && activeTimer.id === taskId) {
+                clearInterval(timerInterval);
+                activeTimer = null;
+                timerInterval = null;
+            }
+
+            renderTasks();
+            updateTimerClock();
+        }
+
+        function deleteTask(taskId) {
+            if (activeTimer && activeTimer.id === taskId) {
+                stopTask(taskId);
+            }
+            
+            tasks = tasks.filter(t => t.id !== taskId);
+            renderTasks();
+        }
+
+        // Theme toggle functionality
+        function setupThemeToggle() {
+            const themeToggle = document.getElementById('themeToggle');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const savedTheme = localStorage.getItem('theme');
+            
+            // Set initial theme based on saved preference or system preference
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                document.body.classList.add('dark-mode');
+                themeToggle.textContent = 'Light Mode ☀️';
+            } else {
+                document.body.classList.remove('dark-mode');
+                themeToggle.textContent = 'Dark Mode 🌙';
+            }
+            
+            // Toggle theme on button click
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                if (document.body.classList.contains('dark-mode')) {
+                    themeToggle.textContent = 'Light Mode ☀️';
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    themeToggle.textContent = 'Dark Mode 🌙';
+                    localStorage.setItem('theme', 'light');
+                }
+                // Update calendar colors when theme changes
+                renderCalendar();
+            });
+        }
+
+        // Initialize
+        renderCalendar();
+        addClockNumbers();
+        updateCurrentClock();
+        updateTimerClock();
+        setupThemeToggle();
+
+        // Update current clock every second
+        setInterval(updateCurrentClock, 1000);
+    </script>
+</body>
+</html>
