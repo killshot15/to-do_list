@@ -62,13 +62,20 @@
             <scope>runtime</scope>
         </dependency>
         
-        <!-- Spring Boot Test Starter -->
+        <!-- Spring Boot Test Starter
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency> -->
+
+        <!-- In-memory DB for tests only -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
         </dependency>
-        
+
         <!-- Spring Security Test -->
         <dependency>
             <groupId>org.springframework.security</groupId>
