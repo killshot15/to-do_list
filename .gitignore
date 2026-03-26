@@ -89,3 +89,11 @@ report.md
 *Backup*
 *_backup*
 *backup*.*
+
+
+# Local config overrides
+src/main/resources/application-local.properties
+
+# Docker artifacts
+.env
+k8s/secret.yaml
